@@ -1,10 +1,9 @@
 #!/usr/bin/env perl6
 
-# Our problem formulation for $N-dimensional Costas arrays uses $N**2
-# Boolean variables (at least log2($N!) are needed anyway) which correspond
-# to the entries of a permutation matrix. That is what we mean when we
-# speak of rows and columns. True Boolean variable is a 1 in the permutation
-# matrix.
+# Our problem formulation for $N-order Costas arrays uses $N**2 Boolean
+# variables (at least log2($N!) are needed anyway) which correspond to the
+# entries of a permutation matrix. That is what we mean when we speak of
+# rows and columns. True Boolean variable is a 1 in the permutation matrix.
 
 class Literal {
     has $.negated is rw;
@@ -31,6 +30,7 @@ multi sub circumfix:<⸨ ⸩> (List $ij where .elems == 2 --> Literal) {
 # Those would make some parts easier.
 
 # Every row and column needs exactly one true variable.
+# TODO: This produces redundant clauses.
 sub permutation-axioms {
     gather {
         # At least one true variable ...
@@ -74,6 +74,7 @@ sub costas-axioms {
             next if $u == 0 and $v == 0;
             next if $i+$u >= $*N or $j+$v >= $*N or $j+$v < 0;
             for [X] ^$*N xx 2 -> ($x, $y) {
+                next if $x == $i and $y == $j;
                 next if $x+$u >= $*N or $y+$v >= $*N or $y+$v < 0;
                 take [¬⸨$i,$j⸩, ¬⸨$i+$u,$j+$v⸩, ¬⸨$x,$y⸩, ¬⸨$x+$u,$y+$v⸩];
             }
@@ -81,13 +82,13 @@ sub costas-axioms {
     }
 }
 
-sub MAIN (Int $N = fail "missing dimension") {
-    my $*N = $N; # Literal.Str depends on this because I don't want to store $N in every literal
+sub MAIN (Int $N = fail "missing order") {
+    my $*N = $N; # XXX: Literal.Str depends on this because I don't want to store $N in every literal
 
     my @axioms = [|permutation-axioms, |costas-axioms];
-    say "c Description of Costas arrays in dimension $N";
+    say "c Description of Costas arrays of order $N";
     say "p cnf { $N**2 } { elems @axioms }";
     for @axioms -> @clause {
-        say @clause».Str.join(' '), " 0";
+        say @clause».Str.join(' '), ' 0';
     }
 }
