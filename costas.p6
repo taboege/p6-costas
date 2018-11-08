@@ -82,13 +82,27 @@ sub costas-axioms {
     }
 }
 
-sub MAIN (Int $N = fail "missing order") {
+# We don't know the number of clauses beforehand but DIMACS cnf requires
+# us to tell the solver. To avoid rewriting the entire file (which may be
+# big) and tricks when feeding it to the SAT solver (we want a proper,
+# self-contained DIMACS file), we insert '0' decimals as padding when
+# writing the file and patch the correct number in at the end.
+constant PADDING = 30; # 30 decimal places is enough; 10**30 is almost 2**100.
+
+sub MAIN (Int $N, Str $outfile) {
     my $*N = $N; # XXX: Literal.Str depends on this because I don't want to store $N in every literal
 
-    my @axioms = [|permutation-axioms, |costas-axioms];
-    say "c Description of Costas arrays of order $N";
-    say "p cnf { $N**2 } { elems @axioms }";
-    for @axioms -> @clause {
-        say @clause».Str.join(' '), ' 0';
+    my $fh = open $outfile, :w;
+    $fh.put: "c Description of Costas arrays of order $N";
+    $fh.put: "p cnf { $N**2 } { '0' x PADDING }";
+    my $patch-position = $fh.tell;
+
+    my $axioms;
+    for (|permutation-axioms, |costas-axioms) -> @clause {
+        $fh.put: @clause».Str.join(' '), ' 0';
+        $axioms++;
     }
+    $fh.seek: $patch-position - (2 + floor(log10($axioms))), SeekFromBeginning;
+    $fh.write: $axioms.Str.encode;
+    $fh.close;
 }

@@ -1,0 +1,14 @@
+Alternative: use the difference triangle. Introduce variables from -N..N
+on each level of the triangle (checking only half of them is sufficient
+according to a theorem) which represent the possible outcomes of
+subtractions of the images under the permutation; the level determines
+the distance of the inverse images. For each level, each number can only
+occur at most once as a difference.
+
+The current implementation uses O(N^2) variables and O(N^2+N^6) clauses.
+The difference triangle would introduce O(N^3) variables and O(N^4)
+clauses (each of these O's swallows lower-degree terms which might not
+be insignificant!).
+
+If we want to target specifically N=32, we can exploit the fact that it
+is a power of 2 and use a compact variable encoding.
