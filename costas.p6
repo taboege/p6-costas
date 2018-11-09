@@ -89,12 +89,12 @@ sub costas-axioms {
 # writing the file and patch the correct number in at the end.
 constant PADDING = 30; # 30 decimal places is enough; 10**30 is almost 2**100.
 
-sub MAIN (Int $N, Str $outfile) {
-    my $*N = $N; # XXX: Literal.Str depends on this because I don't want to store $N in every literal
-
+# XXX: Binding to dynamic $*N because Literal.Str depends on N and I don't
+# want to store that number in every literal
+sub MAIN (Int $*N, Str $outfile) {
     my $fh = open $outfile, :w;
-    $fh.put: "c Description of Costas arrays of order $N";
-    $fh.put: "p cnf { $N**2 } { '0' x PADDING }";
+    $fh.put: "c Description of Costas arrays of order $*N";
+    $fh.put: "p cnf { $*N**2 } { '0' x PADDING }";
     my $patch-position = $fh.tell;
 
     my $axioms;
