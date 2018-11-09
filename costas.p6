@@ -70,12 +70,10 @@ sub costas-axioms {
     # Only those clauses where i+u, j+v, x+u and y+v are defined
     # must be emitted.
     gather for [X] ^$*N xx 2 -> ($i, $j) {
-        for 0..$*N X -$*N..$*N -> ($u, $v) {
+        for 0..^($*N-$i) X -$j..^($*N-$j) -> ($u, $v) {
             next if $u == 0 and $v == 0;
-            next if $i+$u >= $*N or $j+$v >= $*N or $j+$v < 0;
-            for [X] ^$*N xx 2 -> ($x, $y) {
+            for 0..^($*N-$u) X (0 max -$v)..^($*N min $*N-$v) -> ($x, $y) {
                 next if $x == $i and $y == $j;
-                next if $x+$u >= $*N or $y+$v >= $*N or $y+$v < 0;
                 take [¬⸨$i,$j⸩, ¬⸨$i+$u,$j+$v⸩, ¬⸨$x,$y⸩, ¬⸨$x+$u,$y+$v⸩];
             }
         }

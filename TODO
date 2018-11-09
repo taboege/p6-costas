@@ -1,3 +1,5 @@
+Regenerate CNFs for each test! Otherwise this is testing nothing.
+
 Alternative: use the difference triangle. Introduce variables from -N..N
 on each level of the triangle (checking only half of them is sufficient
 according to a theorem) which represent the possible outcomes of
