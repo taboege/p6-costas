@@ -11,4 +11,6 @@ clauses (each of these O's swallows lower-degree terms which might not
 be insignificant!).
 
 If we want to target specifically N=32, we can exploit the fact that it
-is a power of 2 and use a compact variable encoding.
+is a power of 2 and use a compact variable encoding. We have to implement
+arithmetic in the SAT solver then and would basically do the difference
+triangle method.
